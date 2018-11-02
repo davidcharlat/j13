@@ -54,24 +54,32 @@ void	btree_apply_by_level(t_btree *root, void (*applyf)(void *item,
 	t_list	*cursor;
 	int		prec_level;
 	
-	nodes = NULL;
-	prec_level = 0;
-	if (root->left)
-		ft_list_add_node (&nodes, root->left, 1);
-	if (root->right)
-		ft_list_add_node (&nodes, root->right, 1);
-	applyf (root->item, 0, 1);
-	cursor = nodes;	
-	while (cursor)
+	if (root)
 	{
-		if (CUR_NODE_ADD->left)
-			ft_list_add_node (&nodes, CUR_NODE_ADD->left, cursor->level + 1);
-		if (CUR_NODE_ADD->right)
-			ft_list_add_node (&nodes, CUR_NODE_ADD->right, cursor->level + 1);
-		applyf (CUR_NODE_ADD->item, cursor->level, cursor->level - prec_level);
-		if (cursor->next)
-			prec_level = cursor->level;
-		cursor = cursor->next;
+		nodes = NULL;
+		prec_level = 0;
+		if (root->left)
+			ft_list_add_node (&nodes, root->left, 1);
+		if (root->right)
+			ft_list_add_node (&nodes, root->right, 1);
+		applyf (root->item, 0, 1);
+		cursor = nodes;	
+		while (cursor)
+		{
+			if (CUR_NODE_ADD->left)
+				ft_list_add_node (&nodes, CUR_NODE_ADD->left, cursor->level + 1);
+			if (CUR_NODE_ADD->right)
+				ft_list_add_node (&nodes, CUR_NODE_ADD->right, cursor->level + 1);
+			applyf (CUR_NODE_ADD->item, cursor->level, cursor->level - prec_level);
+			if (cursor->next)
+				prec_level = cursor->level;
+			cursor = cursor->next;
+		}
+		while (nodes)
+		{
+			cursor = nodes;
+			nodes = nodes->next;
+			free (cursor);
+		}
 	}
-	free (nodes);
 }
